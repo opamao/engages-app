@@ -21,4 +21,7 @@ class Clients extends Model
         'otp_client',
         'status_client',
     ];
+
+    protected $table = 'clients';
+    protected $primaryKey = 'id_client';
 }

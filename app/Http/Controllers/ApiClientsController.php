@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Mail\EngagesMail;
 use App\Models\Clients;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Symfony\Component\Mime\Email;
 
 class ApiClientsController extends Controller
 {
@@ -108,15 +111,100 @@ class ApiClientsController extends Controller
         }
     }
 
-    public function getForgot()
+    public function getForgot($id)
     {
+        if (empty($id)) {
+            return response()->json([
+                'message' => "Vous devez renseigner votre adresse email pour rétablir votre mot de passe",
+            ], 422);
+        }
+
+        $user = Clients::where('email_client', $id)->first();
+
+        if ($user) {
+
+            $otp = rand(1000, 9999);
+
+            $mailData = [
+                'title' => $otp,
+                'body' => "Votre code OTP est :"
+            ];
+            Mail::to($user->email_client)->send(new EngagesMail($mailData));
+
+            Clients::where('email_client', $id)
+                ->update([
+                    'otp_client' => $otp,
+                ]);
+
+            return response()->json([
+                'statut' => true,
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => "Votre adresse email n'est pas utilisateur de la plateforme...",
+            ], 401);
+        }
     }
 
-    public function getOtp()
+    public function getOtp($id, $email)
     {
+        if (empty($id)) {
+            return response()->json([
+                'message' => "Vous devez renseigner l'otp pour rétablir votre mot de passe",
+            ], 422);
+        }
+
+        $verifyOtp = Clients::where('otp_client', $id)->first();
+        if ($verifyOtp) {
+
+            Clients::where('email_client', $email)
+                ->update([
+                    'otp_client' => null,
+                ]);
+
+            return response()->json([
+                'statut' => true,
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => "L'otp ne correspond pas, veuillez vérifier et réessayer",
+            ], 401);
+        }
     }
 
-    public function postNewPassword()
+    public function postNewPassword(Request $request)
     {
+
+        if (empty($request->password)) {
+            return response()->json([
+                'message' => "Vous devez renseigner le nouveau mot de passe",
+            ], 422);
+        }
+        if (empty($request->cpassword)) {
+            return response()->json([
+                'message' => "Vous devez confirmer le nouveau mot de passe",
+            ], 422);
+        }
+        if (empty($request->email)) {
+            return response()->json([
+                'message' => "Vous devez renseigner votre adresse email",
+            ], 422);
+        }
+
+        if ($request->password == $request->cpassword) {
+
+            Clients::where('email_client', $request->email)
+                ->update([
+                    'password_client' => Hash::make($request->password),
+                ]);
+
+            return response()->json([
+                'message' => "Votre mot de passe a été modifié avec succès. Vous pouvez vous connecter a nouveau",
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => "Vos mots de passe ne correspondent pas, veuillez réessayer",
+            ], 401);
+        }
     }
 }

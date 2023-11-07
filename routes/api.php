@@ -21,3 +21,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('register', [ApiClientsController::class, 'postRegister']);
 Route::post('login', [ApiClientsController::class, 'postLogin']);
+Route::get('forgot/{id}', [ApiClientsController::class, 'getForgot']);
+Route::get('otp/{id}/{email}', [ApiClientsController::class, 'getOtp']);
+// fais passer le nouveau mot de passe en post et son id en get
+Route::post('password', [ApiClientsController::class, 'postNewPassword']);
