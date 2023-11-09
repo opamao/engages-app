@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('galeries', function (Blueprint $table) {
             $table->uuid('id_gal')->primary();
             $table->string('photo_gal');
+            $table->string('libelle_gal');
+            $table->string('type_gal', 50)->comment('mariage, anniversaire, bapteme, naissance, etc.');
             $table->ulid('client_id');
             $table->foreign('client_id')->references('id_client')->on('clients')->onDelete('cascade');
             $table->timestamps();
