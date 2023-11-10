@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-use Symfony\Component\Mime\Email;
 
 class ApiClientsController extends Controller
 {
@@ -64,9 +63,14 @@ class ApiClientsController extends Controller
         $client->telephone_client = $request->tel;
         $client->email_client = $request->email;
         $client->password_client = Hash::make($request->password);
-        $client->save();
 
-        return response()->json($client);
+        if ($client->save()) {
+            return response()->json($client);
+        } else {
+            return response()->json([
+                'message' => "Problème lors de la création de votre compte. Veuillez réssayer!",
+            ], 401);
+        }
     }
 
     public function postLogin(Request $request)

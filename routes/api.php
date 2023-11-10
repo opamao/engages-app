@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ApiClientsController;
+use App\Http\Controllers\ApiInivtationsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,9 +20,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// APIs authentification
 Route::post('register', [ApiClientsController::class, 'postRegister']);
 Route::post('login', [ApiClientsController::class, 'postLogin']);
 Route::get('forgot/{id}', [ApiClientsController::class, 'getForgot']);
 Route::get('otp/{id}/{email}', [ApiClientsController::class, 'getOtp']);
-// fais passer le nouveau mot de passe en post et son id en get
 Route::post('password', [ApiClientsController::class, 'postNewPassword']);
+
+// API mariage
+Route::post('mariage', [ApiInivtationsController::class,'createMariage']);
+Route::get('invitation/{id}', [ApiInivtationsController::class,'getInvitation']);

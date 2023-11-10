@@ -8,4 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 class Galeries extends Model
 {
     use HasFactory;
+    protected $keyType = 'string';
+    public $incrementing = false;
+    protected $fillable = [
+        'photo_gal',
+        'libelle_gal',
+        'type_gal',
+    ];
+
+    protected $hidden = [
+        'client_id',
+    ];
+
+    protected $table = 'galeries';
+    protected $primaryKey = 'id_gal';
 }
