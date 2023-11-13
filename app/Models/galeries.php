@@ -17,7 +17,7 @@ class Galeries extends Model
     ];
 
     protected $hidden = [
-        'client_id',
+        'info_id',
     ];
 
     protected $table = 'galeries';

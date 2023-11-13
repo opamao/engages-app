@@ -17,11 +17,11 @@ return new class extends Migration
     {
         Schema::create('offres_besoins', function (Blueprint $table) {
             $table->uuid('id_off_beso')->primary();
-            $table->ulid('client_id');
+            $table->uuid('client_id');
+            $table->foreign('client_id')->references('id_client')->on('clients');
             $table->string('contact_client_invite', 50);
             $table->integer('montant_libre')->nullable();
-            $table->foreign('client_id')->references('id_client')->on('clients');
-            $table->ulid('besoin_id');
+            $table->uuid('besoin_id');
             $table->foreign('besoin_id')->references('id_beso')->on('besoins')->onDelete('cascade');
             $table->timestamps();
         });

@@ -13,10 +13,11 @@ class Invitations extends Model
     protected $fillable = [
         'contact_inv',
         'type_inv',
+        'etat_inv',
     ];
 
     protected $hidden = [
-        'client_id',
+        'info_id',
     ];
 
     protected $table = 'invitations';

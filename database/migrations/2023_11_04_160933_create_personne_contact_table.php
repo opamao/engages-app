@@ -15,8 +15,8 @@ return new class extends Migration
             $table->uuid('id_cont')->primary();
             $table->string('nom_cont');
             $table->string('tel_cont', 50);
-            $table->ulid('client_id');
-            $table->foreign('client_id')->references('id_client')->on('clients')->onDelete('cascade');
+            $table->uuid('info_id');
+            $table->foreign('info_id')->references('id_info')->on('informations')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -28,8 +28,8 @@ return new class extends Migration
     {
         Schema::dropIfExists('personne_contact');
         Schema::table('personne_contact', function (Blueprint $table) {
-            $table->dropForeign(['client_id']);
-            $table->dropColumn('client_id');
+            $table->dropForeign(['info_id']);
+            $table->dropColumn('info_id');
         });
     }
 };

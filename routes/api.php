@@ -29,4 +29,5 @@ Route::post('password', [ApiClientsController::class, 'postNewPassword']);
 
 // API mariage
 Route::post('mariage', [ApiInivtationsController::class,'createMariage']);
+// liste des invitations, id represente le numero de l'invité
 Route::get('invitation/{id}', [ApiInivtationsController::class,'getInvitation']);

@@ -14,9 +14,10 @@ return new class extends Migration
         Schema::create('invitations', function (Blueprint $table) {
             $table->uuid('id_inv')->primary();
             $table->string('contact_inv', 50);
-            $table->string('type_inv', 20)->comment('accepte, attente')->default('attente');
-            $table->ulid('client_id');
-            $table->foreign('client_id')->references('id_client')->on('clients')->onDelete('cascade');
+            $table->string('type_inv', 50)->comment('mariage, anniversaire, bapteme, naissance, etc.');
+            $table->string('etat_inv', 20)->comment('accepte, attente')->default('attente');
+            $table->uuid('info_id');
+            $table->foreign('info_id')->references('id_info')->on('informations')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -28,8 +29,8 @@ return new class extends Migration
     {
         Schema::dropIfExists('invitations');
         Schema::table('invitations', function (Blueprint $table) {
-            $table->dropForeign(['client_id']);
-            $table->dropColumn('client_id');
+            $table->dropForeign(['info_id']);
+            $table->dropColumn('info_id');
         });
     }
 };

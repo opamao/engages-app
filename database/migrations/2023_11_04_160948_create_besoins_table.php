@@ -18,8 +18,8 @@ return new class extends Migration
             $table->integer('prix_beso')->nullable()->default(0);
             $table->string('type_beso', 20)->comment('offrir, libre');
             $table->string('statut_beso', 20)->comment('valide, attente')->default('attente');
-            $table->ulid('client_id');
-            $table->foreign('client_id')->references('id_client')->on('clients')->onDelete('cascade');
+            $table->uuid('info_id');
+            $table->foreign('info_id')->references('id_info')->on('informations')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -31,8 +31,8 @@ return new class extends Migration
     {
         Schema::dropIfExists('besoins');
         Schema::table('besoins', function (Blueprint $table) {
-            $table->dropForeign(['client_id']);
-            $table->dropColumn('client_id');
+            $table->dropForeign(['info_id']);
+            $table->dropColumn('info_id');
         });
     }
 };

@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('galeries', function (Blueprint $table) {
             $table->uuid('id_gal')->primary();
             $table->string('photo_gal');
-            $table->string('libelle_gal');
+            $table->string('libelle_gal')->comment("le prenom du marie et la mariee");
             $table->string('type_gal', 50)->comment('mariage, anniversaire, bapteme, naissance, etc.');
-            $table->ulid('client_id');
-            $table->foreign('client_id')->references('id_client')->on('clients')->onDelete('cascade');
+            $table->uuid('info_id');
+            $table->foreign('info_id')->references('id_info')->on('informations')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -29,8 +29,8 @@ return new class extends Migration
     {
         Schema::dropIfExists('galeries');
         Schema::table('galeries', function (Blueprint $table) {
-            $table->dropForeign(['client_id']);
-            $table->dropColumn('client_id');
+            $table->dropForeign(['info_id']);
+            $table->dropColumn('info_id');
         });
     }
 };

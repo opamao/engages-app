@@ -18,7 +18,7 @@ return new class extends Migration
             $table->text('message')->nullable();
             $table->dateTime('date_mariage');
             $table->string('couleur', 15)->nullable();
-            $table->ulid('client_id');
+            $table->uuid('client_id');
             $table->foreign('client_id')->references('id_client')->on('clients')->onDelete('cascade');
             $table->timestamps();
         });

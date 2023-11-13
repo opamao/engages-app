@@ -16,7 +16,7 @@ class Contacts extends Model
     ];
 
     protected $hidden = [
-        'client_id',
+        'info_id',
     ];
 
     protected $table = 'personne_contact';

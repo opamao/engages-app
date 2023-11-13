@@ -17,7 +17,7 @@ class Programmes extends Model
     ];
 
     protected $hidden = [
-        'client_id',
+        'info_id',
     ];
 
     protected $table = 'programmes';
