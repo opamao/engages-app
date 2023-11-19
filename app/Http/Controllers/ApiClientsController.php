@@ -45,7 +45,7 @@ class ApiClientsController extends Controller
         $user = Clients::where('email_client', $request->email)->first();
         if ($user) {
             return response()->json([
-                'message' => 'L\'adresse email existe déjà.',
+                'message' => "L'adresse email existe déjà.",
             ], 422);
         }
         // Vérifie si le numéro de téléphone existe déjà
@@ -89,6 +89,7 @@ class ApiClientsController extends Controller
 
         $user = Clients::where('email_client', $request->login)
             ->orWhere('telephone_client', $request->login)
+            ->where('status_client', 'active')
             ->first();
         if ($user && Hash::check($request->password, $user->password_client)) {
 
@@ -123,7 +124,7 @@ class ApiClientsController extends Controller
             ], 422);
         }
 
-        $user = Clients::where('email_client', $id)->first();
+        $user = Clients::where('email_client', $id)->orWhere('telephone_client', $id)->first();
 
         if ($user) {
 
@@ -142,10 +143,11 @@ class ApiClientsController extends Controller
 
             return response()->json([
                 'statut' => true,
+                'email' => $user->email_client,
             ], 200);
         } else {
             return response()->json([
-                'message' => "Votre adresse email n'est pas utilisateur de la plateforme...",
+                'message' => "Votre identifiant n'est pas utilisateur de la plateforme...",
             ], 401);
         }
     }
@@ -158,7 +160,7 @@ class ApiClientsController extends Controller
             ], 422);
         }
 
-        $verifyOtp = Clients::where('otp_client', $id)->first();
+        $verifyOtp = Clients::where('otp_client', $id)->where('email_client', $email)->first();
         if ($verifyOtp) {
 
             Clients::where('email_client', $email)

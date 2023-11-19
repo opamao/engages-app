@@ -17,6 +17,7 @@ class Informations extends Model
         'message',
         'date_mariage',
         'couleur',
+        'code_mariage',
     ];
 
     protected $hidden = [

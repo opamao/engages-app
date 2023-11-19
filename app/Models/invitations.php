@@ -11,7 +11,7 @@ class Invitations extends Model
     protected $keyType = 'string';
     public $incrementing = false;
     protected $fillable = [
-        'contact_inv',
+        'client_inv',
         'type_inv',
         'etat_inv',
     ];

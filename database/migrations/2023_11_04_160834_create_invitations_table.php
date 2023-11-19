@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('invitations', function (Blueprint $table) {
             $table->uuid('id_inv')->primary();
-            $table->string('contact_inv', 50);
+            $table->uuid('client_inv');
             $table->string('type_inv', 50)->comment('mariage, anniversaire, bapteme, naissance, etc.');
             $table->string('etat_inv', 20)->comment('accepte, attente')->default('attente');
             $table->uuid('info_id');
