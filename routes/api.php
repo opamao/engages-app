@@ -27,7 +27,21 @@ Route::get('forgot/{id}', [ApiClientsController::class, 'getForgot']);
 Route::get('otp/{id}/{email}', [ApiClientsController::class, 'getOtp']);
 Route::post('password', [ApiClientsController::class, 'postNewPassword']);
 
-// API mariage
+// API mariage création
 Route::post('mariage', [ApiInivtationsController::class,'createMariage']);
-// liste des invitations, id represente le numero de l'invité
+// liste des invitations
 Route::get('invitation/{id}', [ApiInivtationsController::class,'getInvitation']);
+Route::get('anniversaire/{id}', [ApiInivtationsController::class,'getAnniversaire']);
+Route::get('bapteme/{id}', [ApiInivtationsController::class,'getBapteme']);
+Route::get('naissance/{id}', [ApiInivtationsController::class,'getNaissance']);
+Route::get('autre/{id}', [ApiInivtationsController::class,'getAutre']);
+
+// Liste des invitations créées
+Route::get('creermariage/{id}', [ApiInivtationsController::class,'getInvitationMariage']);
+Route::get('creeranniversaire/{id}', [ApiInivtationsController::class,'getInvitationAnniversaire']);
+Route::get('creerbapteme/{id}', [ApiInivtationsController::class,'getInvitationBapteme']);
+Route::get('creernaissance/{id}', [ApiInivtationsController::class,'getInvitationNaissance']);
+Route::get('creerautre/{id}', [ApiInivtationsController::class,'getInvitationAutres']);
+
+// Integrer une invitation
+Route::get('integrer/{code}/{id}/{type}', [ApiInivtationsController::class,'getIntegration']);
