@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id_inv')->primary();
             $table->uuid('client_inv');
             $table->string('type_inv', 50)->comment('mariage, anniversaire, bapteme, naissance, etc.');
-            $table->string('etat_inv', 20)->comment('accepte, attente')->default('attente');
+            $table->string('etat_inv', 20)->comment('accepte, attente', 'refuse')->default('attente');
             $table->uuid('info_id');
             $table->foreign('info_id')->references('id_info')->on('informations')->onDelete('cascade');
             $table->timestamps();

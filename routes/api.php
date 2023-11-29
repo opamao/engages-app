@@ -29,6 +29,10 @@ Route::post('password', [ApiClientsController::class, 'postNewPassword']);
 
 // API mariage création
 Route::post('mariage', [ApiInivtationsController::class,'createMariage']);
+Route::post('anniversaire', [ApiInivtationsController::class,'createAnniversaire']);
+Route::post('bapteme', [ApiInivtationsController::class,'createBapteme']);
+Route::post('naissance', [ApiInivtationsController::class,'createNaissance']);
+Route::post('autre', [ApiInivtationsController::class,'createAutre']);
 // liste des invitations
 Route::get('invitation/{id}', [ApiInivtationsController::class,'getInvitation']);
 Route::get('anniversaire/{id}', [ApiInivtationsController::class,'getAnniversaire']);
@@ -45,3 +49,6 @@ Route::get('creerautre/{id}', [ApiInivtationsController::class,'getInvitationAut
 
 // Integrer une invitation
 Route::get('integrer/{code}/{id}/{type}', [ApiInivtationsController::class,'getIntegration']);
+
+// Accepter ou refuser une invitation
+Route::get('etatinvitation', [ApiInivtationsController::class,'postEtatInvitation']);

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('programmes', function (Blueprint $table) {
             $table->uuid('id_prog')->primary();
-            $table->string('titre_pro');
+            $table->string('titre_pro')->nullable();
             $table->string('lieu_pro');
             $table->dateTime('date_pro');
             $table->uuid('info_id');

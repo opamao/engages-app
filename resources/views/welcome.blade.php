@@ -7,8 +7,9 @@
         {{ $mailData['body'] }}
         <h3>{{ $mailData['title'] }}</h3>
     </p>
-
-    <p>Merci</p>
+    
+    <br><br>
+    <p>L'équipe Engages App</p>
 
 </body>
 
