@@ -33,6 +33,7 @@ Route::post('anniversaire', [ApiInivtationsController::class,'createAnniversaire
 Route::post('bapteme', [ApiInivtationsController::class,'createBapteme']);
 Route::post('naissance', [ApiInivtationsController::class,'createNaissance']);
 Route::post('autre', [ApiInivtationsController::class,'createAutre']);
+
 // liste des invitations
 Route::get('invitation/{id}', [ApiInivtationsController::class,'getInvitation']);
 Route::get('anniversaire/{id}', [ApiInivtationsController::class,'getAnniversaire']);
@@ -51,4 +52,7 @@ Route::get('creerautre/{id}', [ApiInivtationsController::class,'getInvitationAut
 Route::get('integrer/{code}/{id}/{type}', [ApiInivtationsController::class,'getIntegration']);
 
 // Accepter ou refuser une invitation
-Route::get('etatinvitation', [ApiInivtationsController::class,'postEtatInvitation']);
+Route::post('etatinvitation', [ApiInivtationsController::class,'postEtatInvitation']);
+
+// Liste des photos pour les evenements
+Route::get('galerie', [ApiInivtationsController::class,'getGalerie']);

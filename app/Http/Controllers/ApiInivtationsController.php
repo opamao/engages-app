@@ -1113,6 +1113,7 @@ class ApiInivtationsController extends Controller
             ], 401);
         }
     }
+
     // liste invitation pour créateur
     public function getInvitationMariage($id)
     {
@@ -1592,5 +1593,25 @@ class ApiInivtationsController extends Controller
                 'message' => "Votre intégration a été prise en compte",
             ], 200);
         }
+    }
+
+    // Galerie de defilement des evenements
+    public function getGalerie() {
+        $baseGaleriesPath = Constants::$urlGaleriesBase;
+
+        $galerie = Galeries::inRandomOrder()
+        ->select(
+            'photo_gal',
+            'libelle_gal',
+            'type_gal',
+        )
+        ->limit(5)
+        ->get();
+
+        foreach ($galerie as $galeries) {
+            $galeries->photo_gal = $baseGaleriesPath . $galeries->photo_gal;
+        }
+
+        return response()->json($galerie);
     }
 }
