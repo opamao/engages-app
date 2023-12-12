@@ -23,6 +23,12 @@ class ApiInivtationsController extends Controller
     public function createMariage(Request $request)
     {
 
+        $programmes = json_decode($request->input('programmes'), true); // Programme est un tableau JSON
+        $contacts = json_decode($request->input('contacts'), true); // Contacts est un tableau JSON
+        $besoins = json_decode($request->input('besoins'), true); // Besoins est un tableau JSON
+        $invitations = json_decode($request->input('invitations'), true); // Invitations est un tableau JSON
+
+
         $codeMariage = Carbon::now()->format('YmdHis');
 
         $informations = new Informations();
@@ -40,8 +46,7 @@ class ApiInivtationsController extends Controller
                 'message' => "Impossible de créer l'invitation. Veuillez réessayer",
             ], 401);
         }
-
-        foreach ($request->programmes as $programme) {
+        foreach ($programmes as $programme) {
             $programe = new Programmes();
             $programe->id_prog = Str::uuid();
             $programe->titre_pro = $programme['titreProg'];
@@ -56,24 +61,25 @@ class ApiInivtationsController extends Controller
             }
         }
 
-        // decrypt image base64 data
+        $galeries = $request->file('galeries');
+        foreach ($galeries as $file) {
+            // $imageData = $request->galeries[$i];
+            // // Enlever la partie "data:image/png;base64,"
+            // $imageData = substr($imageData, strpos($imageData, ',') + 1);
+            // // Décoder la chaîne base64
+            // $imageDecoded = base64_decode($imageData);
+            // // Obtenir le MIME type
+            // $finfo = finfo_open();
+            // $mimeType = finfo_buffer($finfo, $imageDecoded, FILEINFO_MIME_TYPE);
+            // finfo_close($finfo);
+            // // Extraire l'extension
+            // $extension = explode('/', $mimeType)[1];
 
-        for ($i = 0; $i < count($request->galeries); $i++) {
-            $imageData = $request->galeries[$i];
-            // Enlever la partie "data:image/png;base64,"
-            $imageData = substr($imageData, strpos($imageData, ',') + 1);
-            // Décoder la chaîne base64
-            $imageDecoded = base64_decode($imageData);
-            // Obtenir le MIME type
-            $finfo = finfo_open();
-            $mimeType = finfo_buffer($finfo, $imageDecoded, FILEINFO_MIME_TYPE);
-            finfo_close($finfo);
-            // Extraire l'extension
-            $extension = explode('/', $mimeType)[1];
+            $fileNameWithExtension = $file->getClientOriginalName();
 
-            $imageName = 'galerie_image_' . time() . '_' . '.' . $extension;
+            $imageName = 'galerie_image_' . time() . '_' . '.' . $fileNameWithExtension;
 
-            file_put_contents(public_path('mariages/' . $imageName), $imageDecoded);
+            $file->storeAs('public/mariages', $imageName);
 
             $galeri = new Galeries();
             $galeri->id_gal = Str::uuid();
@@ -89,8 +95,7 @@ class ApiInivtationsController extends Controller
             }
         }
 
-
-        foreach ($request->contacts as $contact) {
+        foreach ($contacts as $contact) {
             $contac = new Contacts();
             $contac->id_cont = Str::uuid();
             $contac->nom_cont = $contact['nomCont'];
@@ -104,8 +109,8 @@ class ApiInivtationsController extends Controller
             }
         }
 
-        if (!empty($request->besoins)) {
-            foreach ($request->besoins as $besoin) {
+        if (!empty($besoins)) {
+            foreach ($besoins as $besoin) {
                 $besoi = new Besoins();
                 $besoi->id_beso = Str::uuid();
                 $besoi->libelle_beso = $besoin['libelleBeso'];
@@ -122,9 +127,9 @@ class ApiInivtationsController extends Controller
         }
 
         $numero = [];
-        for ($i = 0; $i < count($request->invitations); $i++) {
+        for ($i = 0; $i < count($invitations); $i++) {
 
-            $verifInvitation = Clients::where('telephone_client', $request->invitations[$i])->first();
+            $verifInvitation = Clients::where('telephone_client', $invitations[$i])->first();
 
             if ($verifInvitation) {
                 $invitatio = new Invitations();
@@ -135,7 +140,7 @@ class ApiInivtationsController extends Controller
 
                 if (!$invitatio->save()) {
                     return response()->json([
-                        'message' => "Impossible d'envoyer une invitation à " . $request->invitations[$i] . ". Vous pouvez continuer dans historique",
+                        'message' => "Impossible d'envoyer une invitation à " . $invitations[$i] . ". Vous pouvez continuer dans historique",
                     ], 401);
                 }
 
@@ -146,7 +151,7 @@ class ApiInivtationsController extends Controller
                 ];
                 Mail::to($verifInvitation->email_client)->send(new EngagesInvitation($mailContenu));
             } else {
-                $numero[] = $request->invitations[$i];
+                $numero[] = $invitations[$i];
             }
         }
 
@@ -545,7 +550,7 @@ class ApiInivtationsController extends Controller
                 }
 
                 $mailContenu = [
-                    'intitule' => $request->prenomGracon . ' & '. $request->prenomFille . ' vous invites informe de la naissance de leur bébé.',
+                    'intitule' => $request->prenomGracon . ' & ' . $request->prenomFille . ' vous invites informe de la naissance de leur bébé.',
                     'title' => $informations->code_mariage,
                     'body' => $request->message,
                 ];
@@ -1596,17 +1601,18 @@ class ApiInivtationsController extends Controller
     }
 
     // Galerie de defilement des evenements
-    public function getGalerie() {
+    public function getGalerie()
+    {
         $baseGaleriesPath = Constants::$urlGaleriesBase;
 
         $galerie = Galeries::inRandomOrder()
-        ->select(
-            'photo_gal',
-            'libelle_gal',
-            'type_gal',
-        )
-        ->limit(5)
-        ->get();
+            ->select(
+                'photo_gal',
+                'libelle_gal',
+                'type_gal',
+            )
+            ->limit(5)
+            ->get();
 
         foreach ($galerie as $galeries) {
             $galeries->photo_gal = $baseGaleriesPath . $galeries->photo_gal;

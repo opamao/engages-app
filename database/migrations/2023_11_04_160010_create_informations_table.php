@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('prenom_garcon');
             $table->string('prenom_fille')->nullable();
             $table->text('message')->nullable();
-            $table->dateTime('date_mariage');
-            $table->string('couleur', 15)->nullable();
+            $table->string('date_mariage', 30);
+            $table->string('couleur', 50)->nullable();
             $table->string('code_mariage', 25)->unique();
             $table->uuid('client_id');
             $table->foreign('client_id')->references('id_client')->on('clients')->onDelete('cascade');
