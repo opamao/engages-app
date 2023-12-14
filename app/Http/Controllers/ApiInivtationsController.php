@@ -16,6 +16,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Response;
 
 class ApiInivtationsController extends Controller
 {
@@ -61,25 +63,34 @@ class ApiInivtationsController extends Controller
             }
         }
 
+        // if ($request->hasFile('galeries')) {
         $galeries = $request->file('galeries');
-        foreach ($galeries as $file) {
-            // $imageData = $request->galeries[$i];
-            // // Enlever la partie "data:image/png;base64,"
-            // $imageData = substr($imageData, strpos($imageData, ',') + 1);
-            // // Décoder la chaîne base64
-            // $imageDecoded = base64_decode($imageData);
-            // // Obtenir le MIME type
-            // $finfo = finfo_open();
-            // $mimeType = finfo_buffer($finfo, $imageDecoded, FILEINFO_MIME_TYPE);
-            // finfo_close($finfo);
-            // // Extraire l'extension
-            // $extension = explode('/', $mimeType)[1];
+        if (is_array($galeries)) {
+            foreach ($galeries as $file) {
+                $fileNameWithExtension = $file->getClientOriginalName();
 
-            $fileNameWithExtension = $file->getClientOriginalName();
+                $imageName = 'galerie_image_' . time() . '_' . '.' . $fileNameWithExtension;
 
+                $file->move(public_path('/mariages'), $imageName);
+
+                $galeri = new Galeries();
+                $galeri->id_gal = Str::uuid();
+                $galeri->photo_gal = $imageName;
+                $galeri->libelle_gal = $request->prenomGracon . ' & ' . $request->prenomFille;
+                $galeri->type_gal = 'mariage';
+                $galeri->info_id = $informations->id_info;
+
+                if (!$galeri->save()) {
+                    return response()->json([
+                        'message' => "Problème lors de la création de la partie galerie. Vous pouvez continuer dans historique",
+                    ], 401);
+                }
+            }
+        } else {
+            $fileNameWithExtension = $galeries->getClientOriginalName();
             $imageName = 'galerie_image_' . time() . '_' . '.' . $fileNameWithExtension;
 
-            $file->storeAs('public/mariages', $imageName);
+            $galeries->move(public_path('/mariages'), $imageName);
 
             $galeri = new Galeries();
             $galeri->id_gal = Str::uuid();
@@ -94,6 +105,7 @@ class ApiInivtationsController extends Controller
                 ], 401);
             }
         }
+        // }
 
         foreach ($contacts as $contact) {
             $contac = new Contacts();
@@ -705,8 +717,8 @@ class ApiInivtationsController extends Controller
     // liste invitation pour invité
     public function getInvitation($id)
     {
-        $baseBesoinsPath = Constants::$urlBesoinsBase;
-        $baseGaleriesPath = Constants::$urlGaleriesBase;
+        // $baseBesoinsPath = Constants::$urlBesoinsBase;
+        // $baseGaleriesPath = Constants::$urlGaleriesBase;
 
         $info = Informations::join("invitations", "invitations.info_id", "=", "informations.id_info")
             ->select(
@@ -743,7 +755,7 @@ class ApiInivtationsController extends Controller
             ->get();
 
         foreach ($gal as $galerie) {
-            $galerie->photo_gal = $baseGaleriesPath . $galerie->photo_gal;
+            $galerie->photo_gal = storage_path('app/public/mariages/' . $galerie->photo_gal);
         }
 
         $pers = Contacts::where("info_id", $info->id_info)
@@ -757,7 +769,7 @@ class ApiInivtationsController extends Controller
         $bes = Besoins::where("info_id", $info->id_info)
             ->select(
                 "besoins.id_beso",
-                "besoins.photo_beso",
+                // "besoins.photo_beso",
                 "besoins.libelle_beso",
                 "besoins.prix_beso",
                 "besoins.type_beso",
@@ -765,9 +777,9 @@ class ApiInivtationsController extends Controller
             )
             ->get();
 
-        foreach ($bes as $besoin) {
-            $besoin->photo_beso = $baseBesoinsPath . $besoin->photo_beso;
-        }
+        // foreach ($bes as $besoin) {
+        //     $besoin->photo_beso = $baseBesoinsPath . $besoin->photo_beso;
+        // }
 
         if ($info) {
 
@@ -1122,10 +1134,9 @@ class ApiInivtationsController extends Controller
     // liste invitation pour créateur
     public function getInvitationMariage($id)
     {
-        $baseBesoinsPath = Constants::$urlBesoinsBase;
         $baseGaleriesPath = Constants::$urlGaleriesBase;
 
-        $info = Informations::join("invitations", "invitations.info_id", "=", "informations.id_info")
+        $info = Informations::join("galeries", "galeries.info_id", "=", "informations.id_info")
             ->select(
                 "informations.id_info",
                 "informations.prenom_garcon",
@@ -1133,12 +1144,18 @@ class ApiInivtationsController extends Controller
                 "informations.message",
                 "informations.date_mariage",
                 "informations.couleur",
-                "invitations.id_inv",
-                "invitations.type_inv",
-                "invitations.etat_inv",
             )
             ->where("informations.client_id", $id)
-            ->where("invitations.type_inv", "mariage")
+            ->where("galeries.type_gal", "mariage")
+            ->groupBy(
+                "informations.id_info",
+                "informations.id_info",
+                "informations.prenom_garcon",
+                "informations.prenom_fille",
+                "informations.message",
+                "informations.date_mariage",
+                "informations.couleur",
+            )
             ->first();
 
         $prog = Programmes::where("info_id", $info->id_info)
@@ -1174,7 +1191,7 @@ class ApiInivtationsController extends Controller
         $bes = Besoins::where("info_id", $info->id_info)
             ->select(
                 "besoins.id_beso",
-                "besoins.photo_beso",
+                // "besoins.photo_beso",
                 "besoins.libelle_beso",
                 "besoins.prix_beso",
                 "besoins.type_beso",
@@ -1182,9 +1199,16 @@ class ApiInivtationsController extends Controller
             )
             ->get();
 
-        foreach ($bes as $besoin) {
-            $besoin->photo_beso = $baseBesoinsPath . $besoin->photo_beso;
-        }
+        $inv = Invitations::join("clients", "clients.id_client", "=", "invitations.client_inv")
+            ->select(
+                "invitations.type_inv",
+                "invitations.etat_inv",
+                "clients.nom_client",
+                "clients.prenom_client",
+                "clients.telephone_client",
+            )
+            ->where("invitations.info_id", $info->id_info)
+            ->get();
 
         if ($info) {
 
@@ -1195,6 +1219,7 @@ class ApiInivtationsController extends Controller
                     'galeries' => $gal,
                     'personnes' => $pers,
                     'besoins' => $bes,
+                    'invites' => $inv,
                 ],
             ], 200);
         } else {
