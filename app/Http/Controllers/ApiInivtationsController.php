@@ -1158,7 +1158,7 @@ class ApiInivtationsController extends Controller
             )
             ->first();
 
-        $prog = Programmes::where("info_id", $info->id_info)
+        $prog = Programmes::where("info_id", $info->id_info ?? 0)
             ->select(
                 "programmes.id_prog",
                 "programmes.titre_pro",
@@ -1167,7 +1167,7 @@ class ApiInivtationsController extends Controller
             )
             ->get();
 
-        $gal = Galeries::where("info_id", $info->id_info)
+        $gal = Galeries::where("info_id", $info->id_info ?? 0)
             ->select(
                 "galeries.id_gal",
                 "galeries.photo_gal",
@@ -1180,7 +1180,7 @@ class ApiInivtationsController extends Controller
             $galerie->photo_gal = $baseGaleriesPath . $galerie->photo_gal;
         }
 
-        $pers = Contacts::where("info_id", $info->id_info)
+        $pers = Contacts::where("info_id", $info->id_info ?? 0)
             ->select(
                 "personne_contact.id_cont",
                 "personne_contact.nom_cont",
@@ -1188,7 +1188,7 @@ class ApiInivtationsController extends Controller
             )
             ->get();
 
-        $bes = Besoins::where("info_id", $info->id_info)
+        $bes = Besoins::where("info_id", $info->id_info ?? 0)
             ->select(
                 "besoins.id_beso",
                 // "besoins.photo_beso",
@@ -1207,7 +1207,7 @@ class ApiInivtationsController extends Controller
                 "clients.prenom_client",
                 "clients.telephone_client",
             )
-            ->where("invitations.info_id", $info->id_info)
+            ->where("invitations.info_id", $info->id_info ?? 0)
             ->get();
 
         if ($info) {
